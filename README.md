@@ -8,7 +8,7 @@ Smart hover WebComponent inspired on iPad OS contextual cursor.
 To use the web component simply import it in your main or app file like so:
 
 ```javascript
-import './node_modules/smart-hoverjs'
+import 'smart-hoverjs'
 ```
 
 Or include it in your index.html file
