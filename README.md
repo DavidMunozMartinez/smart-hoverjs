@@ -1,5 +1,5 @@
 # smart-hoverjs
-Smart hover WebComponent inspired on iPad OS contextual cursor.
+smart-hoverjs WebComponent inspired on iPad OS contextual cursor.
 
 # Install
 `npm -i smart-hoverjs`
@@ -19,10 +19,10 @@ Or include it in your index.html file
 
 # Use
 
-Smart hover component behaves as a regular div container, except it takes a query parameter attribute which lets the container know which children to consider 'hoverable'.
+smart-hoverjs component behaves as a regular div container, except it can take a few attributes that can define certain behaviors and its style.
 
 ```html
-<smart-hover class="category-list" query-selector=".category-list-item">
+<smart-hover class="category-list">
   <div class="category-list-item">Test 1</div>
   <div class="category-list-item">Test 2</div>
   <div class="category-list-item">Test 3</div>
@@ -30,7 +30,15 @@ Smart hover component behaves as a regular div container, except it takes a quer
 </smart-hover>
 ```
 
-Smart hover component will automatically position itself on top of the elements that where found with the query selector when they are hovered, automatically adapting to their position and size.
+Smart hover component will automatically position itself on top of the elements that where found with the query selector when they are hovered, automatically adapting to their position and size. The smart hover element will be appended programatically with the class ".smart-hover-shadow" with the defautl styles applied.
+
+```css
+.smart-hover-shadow {
+  border-radius: 5px;
+  background: rgba(0,0,0,0.15);
+}
+```
+
 <p style="text-align: center; width: 100%">
   <img src="assets/smart-hover-example-1.gif"/>
 </p> 
@@ -38,14 +46,6 @@ Smart hover component will automatically position itself on top of the elements 
 # Customization
 
 Smart hoverjs has default styles applied under the .smart-hover-shadow css class
-
-### Default
-```css
-.smart-hover-shadow {
-  border-radius: 5px;
-  background: rgba(0,0,0,0.15);
-}
-```
 
 Feel free to override this properties or remove them entirely by adding the "override-styles" attribute
 
@@ -57,7 +57,7 @@ Feel free to override this properties or remove them entirely by adding the "ove
 </smart-hover>
 ```
 
-With this attribute default styles avobe will not be applied and you can write your own .smart-hover-shadow class to achieve the styles you want
+With this attribute set to "true", default styles above will not be applied and you can write your own .smart-hover-shadow class to achieve the styles you want
 
 ```css
 .container {
@@ -81,8 +81,17 @@ With this attribute default styles avobe will not be applied and you can write y
 }
 ```
 
-NOTE: There are a few style properties applied programatically that you will not be able to override like left, top, with, height, position, since this ones determine the position of our shadow.
+</br>
+</br>
 
+<p style="text-align: center; width: 100%">
+  <img src="assets/smart-hover-example-3.gif"/>
+</p> 
+
+</br>
+</br>
+
+NOTE: There are a few style properties applied programatically that you will not be able to override like left, top, with, height, position.
 # Attributes
 
 ```html
@@ -95,19 +104,43 @@ NOTE: There are a few style properties applied programatically that you will not
 </smart-hover>
 ```
 
-### query-selector
+### <code>query-selector</code>
 
 Query selector defined here will be used to find the hoverable elements inside the container, all elements found by the query selector will become 'hoverable'. If unset it retrieves all children of the container via parentElement.children property.
 
-### override-styles
+```html
+<smart-hover query-selector=".item-list"></smart-hover>
+```
 
-If set to "true" default .smart-hover-shadow styles wont be applies (with the exception of the ones applied programatically), this makes it easier to fully customize the style of the smart-hover-shadow element. If unset it will apply the default styles from the .smart-hover-shadow class
+### <code>override-styles</code>
 
-### transition-time
+If set to "true" default .smart-hover-shadow styles wont be applies (with the exception of the ones applied programatically), this makes it easier to fully customize the style of the smart-hover-shadow element. If unset it will apply the default styles from the .smart-hover-shadow class.
 
-Time in milliseconds that the shadow element will take from one element to the next one when hover changes. If unset default value will be set to 180
+```html
+<smart-hover override-styles="true | false"></smart-hover>
+```
 
-### transition-props
+### <code>transition-props</code>
 
-If you want to apply the transition to specific css properties here, separate them by a comma, ex.
-> "left,top,background"
+If you want to apply the transition to specific css properties, you can apply them by adding them in this attribute, separating them with a comma.
+
+```html
+<smart-hover transition-props="left,top,height,width"></smart-hover>
+```
+
+### <code>transition-time</code>
+
+Time in milliseconds that the shadow element will take from one element to the next one when hover changes. If unset default value will be set to 180.
+
+```html
+<smart-hover transition-time="200 | 180 | 340"></smart-hover>
+```
+
+### <code>transition-mode</code>
+
+Transition mode can be any valid css transition timing functiontype
+https://developer.mozilla.org/en-US/docs/Web/CSS/transition-timing-function
+
+```html
+<smart-hover transition-mode="ease | ease-in-out"></smart-hover>
+```
