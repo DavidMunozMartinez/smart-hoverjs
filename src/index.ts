@@ -1,11 +1,14 @@
+// Default styles
+import './styles.scss';
+
 class SmartHover extends HTMLElement {
     private props = ['top', 'left', 'height', 'width'];
-    private shadowAnimationMS: number = 180;
-    private transition: string = `all ${this.shadowAnimationMS}ms`;
+    private transition: any = {};
     // Used to compare and determine if the contents of the container have changed so we can re-apply
     // our children listeners.
     private contents: string = '';
-    private siblingsActive: boolean = false;
+    private animateShadow: boolean = false;
+    private overrideStyles: boolean = false;
 
     // This element is the one that will be moving over the child elements, the 'smart' hover
     shadow!: HTMLElement;
@@ -15,7 +18,9 @@ class SmartHover extends HTMLElement {
     query: string | null = null;
 
     connectedCallback() {
+        this.defineTransition();
         this.query = this.getAttribute('query-selector');
+        this.overrideStyles = this.getAttribute('override-styles') == 'true';
         // Applies the necessary listeners to the childs of the container
         this.containerListeners();
         this.childrenListeners();
@@ -48,7 +53,7 @@ class SmartHover extends HTMLElement {
             if (callback) {
                 callback();
             }
-        }, this.shadowAnimationMS);
+        }, this.transition.time);
     }
 
     /**
@@ -86,7 +91,7 @@ class SmartHover extends HTMLElement {
      */
     private containerMouseLeave(event: any) {
         this.safeRemoveShadow();
-        this.siblingsActive = false;
+        this.animateShadow = false;
     }
 
     /**
@@ -120,19 +125,13 @@ class SmartHover extends HTMLElement {
      * @param event DOM event
      */
     private childMouseEnter(event: any) {
-        // Re-apply listeners if the container content changed
-        if (this.contents !== this.innerText) {
-            this.childrenListeners();
-        }
-
         if (event && event.target) {
             let rect = this.getRectangle(event.target);
-            this.applyPosition(rect, this.siblingsActive);
+            this.applyPosition(rect, this.animateShadow);
             this.showShadow();
             this.active = event.target;
+            this.animateShadow = true;
         }
-
-        this.siblingsActive = true;
     }
 
     /**
@@ -145,7 +144,7 @@ class SmartHover extends HTMLElement {
         let children = this.getChildren();
         if (children.length == 0) {
             this.hideShadow(() => {
-                this.safeRemoveShadow()
+                this.safeRemoveShadow();
             });
         }
     }
@@ -159,7 +158,7 @@ class SmartHover extends HTMLElement {
     }
 
     /**
-     * Takes a DOM native HTMLELEMENT and returns a rectangle object holding 
+     * Takes a DOM native HTMLElement and returns a rectangle object holding 
      * the top, left, height, width values
      * @param element Element that will be used to get the rectangle
      */
@@ -177,16 +176,16 @@ class SmartHover extends HTMLElement {
      * @param rect Obejct holding top, left, height, width values
      * @param animate Determines if the rectangle changes will be animated
      */
-    private applyPosition(rect: any, animate?: boolean) {        
+    private applyPosition(rect: any, animate?: boolean) {   
+        // Get rid of the transition property if the animate property is set to false  
         this.shadow.style.transition = animate ? this.transition : 'unset';
-
         this.props.forEach((prop: any) => {
             this.shadow.style[prop] = rect[prop];
         });
         // Request animation frame so the chromium renderer applies our position with the proper transition
         // property, then we re-apply the transition to its default value
         window.requestAnimationFrame(() => {
-            this.shadow.style.transition = this.transition;
+            this.shadow.style.transition = this.transition.string;
         });
     }
 
@@ -197,10 +196,13 @@ class SmartHover extends HTMLElement {
     private createShadow() {
         let element: any = document.createElement('div');
         element.classList.add('smart-hover-shadow');
+        if (this.overrideStyles) {
+            element.classList.add('override-styles');
+        }
         element.style.position = 'absolute';
-        element.style.cursor = 'pointer';
-        element.style.transition = this.transition;
-        element.style['z-index'] = -1;
+        element.style['pointer-events'] = 'none';
+        element.style['z-index'] = '-1';
+        element.style.transition = this.transition.string;
         return element;
     }
 
@@ -224,6 +226,23 @@ class SmartHover extends HTMLElement {
         if (shadow) {
             this.removeChild(this.shadow);
         }
+    }
+
+    private defineTransition() {
+        let transitionTimeAttr: string = this.getAttribute('transition-time') || '180';
+        let transitionModeAttr: string = this.getAttribute('transition-mode') || 'ease';
+        let transitionPropsAttr: string | null = this.getAttribute('transition-props');
+        this.transition.time = parseInt(transitionTimeAttr);
+
+        let props: Array<string> = ['all'];
+        if (transitionPropsAttr) {
+            props = transitionPropsAttr.split(',');
+        }
+
+        this.transition.string = '';
+        props.map((prop) => {
+            this.transition.string += `${prop} ${this.transition.time}ms ${transitionModeAttr}`;
+        });
     }
 }
 // Define web component

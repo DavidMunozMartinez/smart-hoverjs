@@ -1,0 +1,7 @@
+assets
+tsconfig.json
+webpack.config.js
+src
+use-case-test.html
+dist/*.map
+**/*.DS_Store

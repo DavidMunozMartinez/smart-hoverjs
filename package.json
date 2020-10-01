@@ -1,7 +1,7 @@
 {
   "name": "smart-hoverjs",
-  "version": "1.0.2",
-  "description": "\"Animated web components for fluid hover transitions\"",
+  "version": "1.0.3",
+  "description": "Animated web components for fluid hover transitions",
   "main": "dist/index.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
@@ -25,10 +25,14 @@
     "url": "https://github.com/DavidMunozMartinez/smart-hoverjs/issues"
   },
   "homepage": "https://github.com/DavidMunozMartinez/smart-hoverjs#readme",
-  "dependencies": {
+  "devDependencies": {
     "ts-loader": "^8.0.4",
     "typescript": "^4.0.3",
     "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "css-loader": "^4.3.0",
+    "sass": "^1.26.11",
+    "sass-loader": "^10.0.2",
+    "style-loader": "^1.2.1"
   }
 }
