@@ -1,6 +1,7 @@
 tsconfig.json
 webpack.config.js
 src
-use-case-test.html
+dist/use-case-test.html
 dist/*.map
+dist/app.css
 **/*.DS_Store

@@ -91,7 +91,11 @@ With this attribute set to "true", default styles above will not be applied and 
 </br>
 </br>
 
-NOTE: There are a few style properties applied programatically that you will not be able to override like left, top, with, height, position.
+# Restrictions
+
+NOTE: There are a few style properties applied programatically that you will not be able to override like left, top, with, height.
+The shadow element also has by default absolute position and pointer events set to none, to avoid problems with your hoverable elements
+
 # Attributes
 
 ```html

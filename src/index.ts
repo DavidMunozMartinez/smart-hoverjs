@@ -90,7 +90,9 @@ class SmartHover extends HTMLElement {
      * @param event DOM event
      */
     private containerMouseLeave(event: any) {
-        this.safeRemoveShadow();
+        this.hideShadow(() => {
+            this.safeRemoveShadow();
+        })
         this.animateShadow = false;
     }
 
@@ -126,11 +128,15 @@ class SmartHover extends HTMLElement {
      */
     private childMouseEnter(event: any) {
         if (event && event.target) {
+            this.shadow.classList.add('moving');
             let rect = this.getRectangle(event.target);
             this.applyPosition(rect, this.animateShadow);
             this.showShadow();
             this.active = event.target;
             this.animateShadow = true;
+            setTimeout(() => {
+                this.shadow.classList.remove('moving');
+            }, this.transition.time);
         }
     }
 
