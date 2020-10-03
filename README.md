@@ -40,7 +40,7 @@ Smart hover component will automatically position itself on top of the elements 
 ```
 
 <p style="text-align: center; width: 100%">
-  <img src="assets/smart-hover-example-1.gif"/>
+  <img src="https://firebasestorage.googleapis.com/v0/b/smart-hoverjs.appspot.com/o/smart-hover-example-1.gif?alt=media&token=d7d2f46a-b0fa-4ad9-9db3-71838c182e15"/>
 </p> 
 
 # Customization
@@ -85,7 +85,7 @@ With this attribute set to "true", default styles above will not be applied and 
 </br>
 
 <p style="text-align: center; width: 100%">
-  <img src="assets/smart-hover-example-3.gif"/>
+  <img src="https://firebasestorage.googleapis.com/v0/b/smart-hoverjs.appspot.com/o/smart-hover-example-3.gif?alt=media&token=51a3bd2f-3b36-414c-bed5-5f74bd81b908"/>
 </p> 
 
 </br>
