@@ -127,7 +127,6 @@ class SmartHover extends HTMLElement {
      * @param event DOM event
      */
     private childMouseEnter(event: any) {
-        console.log(event);
         if (event && event.target) {
             this.shadow.classList.add('moving');
             let rect = this.getRectangle(event.target);
