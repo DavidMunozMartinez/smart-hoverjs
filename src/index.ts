@@ -127,6 +127,7 @@ class SmartHover extends HTMLElement {
      * @param event DOM event
      */
     private childMouseEnter(event: any) {
+        console.log(event);
         if (event && event.target) {
             this.shadow.classList.add('moving');
             let rect = this.getRectangle(event.target);
@@ -186,7 +187,7 @@ class SmartHover extends HTMLElement {
         // Get rid of the transition property if the animate property is set to false  
         this.shadow.style.transition = animate ? this.transition : 'unset';
         this.props.forEach((prop: any) => {
-            this.shadow.style[prop] = rect[prop];
+            this.shadow.style[prop] = rect[prop] + 'px';
         });
         // Request animation frame so the chromium renderer applies our position with the proper transition
         // property, then we re-apply the transition to its default value
@@ -207,7 +208,7 @@ class SmartHover extends HTMLElement {
         }
         element.style.position = 'absolute';
         element.style['pointer-events'] = 'none';
-        element.style['z-index'] = '-1';
+        element.style['z-index'] = 99;
         element.style.transition = this.transition.string;
         return element;
     }
