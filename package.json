@@ -1,6 +1,6 @@
 {
   "name": "smart-hoverjs",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Animated web components for fluid hover transitions",
   "main": "dist/index.js",
   "scripts": {

@@ -24,7 +24,6 @@ class SmartHover extends HTMLElement {
     private startDelay: number = 0;
     private moveEvent: MoveEvent = MoveEvent.hover;
     private initialChildQuery: string | null = null;
-    private _children: any;
 
     // This element is the one that will be moving over the child elements, the 'smart' hover
     shadow!: HTMLElement;
@@ -41,11 +40,11 @@ class SmartHover extends HTMLElement {
         let delay = this.getAttribute('start-delay');
         if (delay) this.startDelay = parseInt(delay);
         this.moveEvent = this.getMoveEvent();
+        this.shadow = this.createShadow();
         this.containerListeners();
         // Applies the necessary listeners to the childs of the container
         this.childrenListeners();
         // Creates the shadow element that wil be used to hover over elements
-        this.shadow = this.createShadow();
 
         // Append shadow if it contains hoverable elements
         if (this.getChildren().length > 0) {
@@ -100,14 +99,15 @@ class SmartHover extends HTMLElement {
     }
 
     private setClickBehavior() {
-        setTimeout(() => {
-            if (this.getChildren().length > 0) {
-                let initial = this.getInitialChild();
-                this.moveShadowToTarget(initial)
-            }
-        }, this.startDelay);
         this.addEventListener('mouseenter', (event: any) => this.containerMouseEnter(event));
         this.addEventListener('mousemove', (event: any) => this.containerMouseMove(event));
+        setTimeout(() => {
+            this.safeAppendShadow();
+            if (this.getChildren().length > 0) {
+                let initial = this.getInitialChild();
+                this.moveShadowToTarget(initial);
+            }
+        }, this.startDelay);
     }
 
     /**
