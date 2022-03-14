@@ -1,6 +1,18 @@
 // Default styles
 import './styles.scss';
 
+enum MoveEvent {
+    hover = 'mouseover',
+    click = 'onclick'
+};
+
+interface Rectangle {
+    top: number,
+    left: number,
+    height: number,
+    width: number
+};
+
 class SmartHover extends HTMLElement {
     private props = ['top', 'left', 'height', 'width'];
     private transition: any = {};
@@ -9,6 +21,9 @@ class SmartHover extends HTMLElement {
     private contents: string = '';
     private animateShadow: boolean = false;
     private overrideStyles: boolean = false;
+    private startDelay: number = 0;
+    private moveEvent: MoveEvent = MoveEvent.hover;
+    private initialChildQuery: string | null = null;
 
     // This element is the one that will be moving over the child elements, the 'smart' hover
     shadow!: HTMLElement;
@@ -20,9 +35,13 @@ class SmartHover extends HTMLElement {
     connectedCallback() {
         this.defineTransition();
         this.query = this.getAttribute('query-selector');
+        this.initialChildQuery = this.getAttribute('initial-child-query');
         this.overrideStyles = this.getAttribute('override-styles') == 'true';
-        // Applies the necessary listeners to the childs of the container
+        let delay = this.getAttribute('start-delay');
+        if (delay) this.startDelay = parseInt(delay);
+        this.moveEvent = this.getMoveEvent();
         this.containerListeners();
+        // Applies the necessary listeners to the childs of the container
         this.childrenListeners();
         // Creates the shadow element that wil be used to hover over elements
         this.shadow = this.createShadow();
@@ -62,9 +81,30 @@ class SmartHover extends HTMLElement {
      * if the contents of the container has changed
      */
     private containerListeners() {
+        switch (this.moveEvent) {
+            case MoveEvent.click:
+                this.setClickBehavior();
+                break;
+            case MoveEvent.hover:
+            default:
+                this.setHoverBehavior();
+                break;
+        }
+    }
+
+    private setHoverBehavior() {
         this.addEventListener('mouseenter', (event: any) => this.containerMouseEnter(event));
         this.addEventListener('mouseleave', (event: any) => this.containerMouseLeave(event));
         this.addEventListener('mousemove', (event: any) => this.containerMouseMove(event));
+    }
+
+    private setClickBehavior() {
+        if (this.getChildren().length > 0) {
+            setTimeout(() => {
+                let initial = this.getInitialChild();
+                this.moveShadowToTarget(initial)
+            }, 200);
+        }
     }
 
     /**
@@ -112,31 +152,44 @@ class SmartHover extends HTMLElement {
      * Applies mouse events to container children, these events handle changing the shadow position and size
      */
     private childrenListeners() {
+        switch (this.moveEvent) {
+            case MoveEvent.click:
+                this.setChildrenClickBehavior();
+                break;
+            case MoveEvent.hover:
+            default:
+                this.setChildrenHoverBehavior();
+                break;
+
+        }
+    }
+
+    private setChildrenClickBehavior() {
+        let children: Array<any> = this.getChildren();
+        children.forEach(child => {
+            child.removeEventListener('click', this.childEventHandler.bind(this), false);
+            child.addEventListener('click', this.childEventHandler.bind(this), false);
+        });
+    }
+
+    private setChildrenHoverBehavior() {
         let children: Array<any> = this.getChildren();
         children.map((child) => {
-            child.removeEventListener('mouseenter', this.childMouseEnter.bind(this), false);
+            child.removeEventListener('mouseenter', this.childEventHandler.bind(this), false);
             child.removeEventListener('mouseleave', this.childMouseLeave.bind(this), false);
-
-            child.addEventListener('mouseenter', this.childMouseEnter.bind(this), false);
+            child.addEventListener('mouseenter', this.childEventHandler.bind(this), false);
             child.addEventListener('mouseleave', this.childMouseLeave.bind(this), false);
         });
     }
 
     /**
-     * Triggered when a child node triggers a mouseenter event
+     * Triggered when a child node triggers either a mouseenter/click event, depending
+     * on the defined move event behavior
      * @param event DOM event
      */
-    private childMouseEnter(event: any) {
+    private childEventHandler(event: any) {
         if (event && event.target) {
-            this.shadow.classList.add('moving');
-            let rect = this.getRectangle(event.target);
-            this.applyPosition(rect, this.animateShadow);
-            this.showShadow();
-            this.active = event.target;
-            this.animateShadow = true;
-            setTimeout(() => {
-                this.shadow.classList.remove('moving');
-            }, this.transition.time);
+            this.moveShadowToTarget(event.target);
         }
     }
 
@@ -163,12 +216,19 @@ class SmartHover extends HTMLElement {
         return Array.from(this.query ? this.querySelectorAll(this.query) : this.children);
     }
 
+    private getInitialChild() {
+        if (this.initialChildQuery) {
+            return this.querySelector(this.initialChildQuery);
+        }
+        return this.getChildren()[0];
+    }
+
     /**
      * Takes a DOM native HTMLElement and returns a rectangle object holding 
      * the top, left, height, width values
      * @param element Element that will be used to get the rectangle
      */
-    private getRectangle(element: HTMLElement) {
+    private getRectangle(element: HTMLElement): Rectangle {
         return {
             top: element.offsetTop,
             left: element.offsetLeft,
@@ -185,14 +245,16 @@ class SmartHover extends HTMLElement {
     private applyPosition(rect: any, animate?: boolean) {   
         // Get rid of the transition property if the animate property is set to false  
         this.shadow.style.transition = animate ? this.transition : 'unset';
-        this.props.forEach((prop: any) => {
-            this.shadow.style[prop] = rect[prop] + 'px';
-        });
-        // Request animation frame so the chromium renderer applies our position with the proper transition
-        // property, then we re-apply the transition to its default value
-        window.requestAnimationFrame(() => {
-            this.shadow.style.transition = this.transition.string;
-        });
+        setTimeout(() => {
+            this.props.forEach((prop: any) => {
+                this.shadow.style[prop] = rect[prop] + 'px';
+            });
+            // Request animation frame so the chromium renderer applies our position with the proper transition
+            // property, then we re-apply the transition to its default value
+            window.requestAnimationFrame(() => {
+                this.shadow.style.transition = this.transition.string;
+            });
+        }, this.startDelay);
     }
 
     /**
@@ -249,6 +311,29 @@ class SmartHover extends HTMLElement {
         props.map((prop) => {
             this.transition.string += `${prop} ${this.transition.time}ms ${transitionModeAttr}`;
         });
+    }
+
+    private moveShadowToTarget(target: HTMLElement) {
+        this.shadow.classList.add('moving');
+        let rect = this.getRectangle(target);
+        this.applyPosition(rect, this.animateShadow);
+        this.showShadow();
+        this.active = target;
+        this.animateShadow = true;
+        setTimeout(() => {
+            this.shadow.classList.remove('moving');
+        }, this.transition.time);
+    }
+
+    private getMoveEvent(): MoveEvent {
+        let attribute = this.getAttribute('move-event');
+        switch (attribute) {
+            case 'click':
+                return MoveEvent.click
+            case 'hover':
+            default:
+                return MoveEvent.hover;
+        }
     }
 }
 // Define web component

@@ -16,7 +16,7 @@ body {
     box-sizing: border-box;
 }
 
-.header > .item {
+/* .header > .item {
     display: inline-block;
     height: 37px;
     width: 100px;
@@ -25,22 +25,20 @@ body {
     text-align: center;
     cursor: pointer;
     box-sizing: border-box;
-}
+} */
 
-smart-hover.header div.smart-hover-shadow {
+/* smart-hover.header div.smart-hover-shadow {
     transition: all 1.4s ease;
     border-bottom: 3px;
     border-bottom-color: white;
     border-bottom-style: solid;
     background: rgba(255,255,255,0.1);
-}
+} */
 
 .container {
-    width: 310px;
-    height: 30px;
-    position: absolute;
-    text-align: center;
-    background: lightgray;
+    background: #e8e8e8;
+    display: block;
+    margin-bottom: 30px;
 }
 
 .container>.button {
