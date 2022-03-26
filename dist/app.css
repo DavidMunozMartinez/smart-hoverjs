@@ -41,7 +41,7 @@ body {
     margin-bottom: 30px;
 }
 
-.container>.button {
+.container > .button {
     width: 100px;
     height: 30px;
     display: inline-block;

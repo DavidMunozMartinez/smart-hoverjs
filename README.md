@@ -100,33 +100,77 @@ The shadow element also has by default absolute position and pointer events set 
 
 ```html
 <smart-hover
+  move-event=""
   query-selector=""
-  override-styles=""
+  initial-child-query=""
+  shadow-class=""
+  children-can-change=""
   transition-time=""
   transition-mode=""
   transition-props="">
 </smart-hover>
 ```
 
-### <code>query-selector</code>
+### <code> move-event </code>
 
-Query selector defined here will be used to find the hoverable elements inside the container, all elements found by the query selector will become 'hoverable'. If unset it retrieves all children of the container via parentElement.children property.
+This is the property that defines the type of interaction the shadow should react to.
+If set to  <code> "hover" </code> the shadow element will only be visible and move while hovering interactable elements.
+If set to <code> "click" </code> the shadow element will always be visible and only move when an interactable element is clicked
 
 ```html
-<smart-hover query-selector=".item-list"></smart-hover>
+<smart-hover move-event="hover | click"></smart-hover>
 ```
 
-### <code>override-styles</code>
+### <code>query-selector</code>
 
-If set to "true" default .smart-hover-shadow styles wont be applies (with the exception of the ones applied programatically), this makes it easier to fully customize the style of the smart-hover-shadow element. If unset it will apply the default styles from the .smart-hover-shadow class.
+Query selector defined here will be used to find elements inside the container, all elements found by the query selector will become 'interactable'. If unset it retrieves all children of the container using parentElement.children property.
 
 ```html
-<smart-hover override-styles="true | false"></smart-hover>
+<smart-hover query-selector=".interactable">
+  <!-- This will be interactable -->
+  <div class="interactable">
+  <div class="interactable">
+  <!-- This will NOT be interactable -->
+  <div class="not-interactable">
+</smart-hover>
+```
+
+### <code> initial-child-query </code>
+
+This is ONLY used if the move-event is set to <code>"click"</code>.
+This is another query selector used to define the initial position of the shadow element, if this is unset it will use the element found trough the query selector
+attribute or the first children of the container
+
+```html
+<smart-hover initial-child-query=".interactable.initial">
+  <div class="interactable">
+  <div class="interactable">
+  <div class="not-interactable">
+    <!-- The shadow element will initially position itself in this element if the move-event is set to "click" -->
+  <div class="interactable initial">
+</smart-hover>
+```
+
+### <code>shadow-class</code>
+
+The string defined here will be applied to the shadow element as a single class, when this is defined the default styles of the shadow will be removed
+
+```html
+<smart-hover shadow-class="my-custom-class-name"></smart-hover>
+```
+
+### <code> children-can-change </code>
+
+This is used to tell the component that interactable elements might be added or removed from the container, to make sure that only the necessary event listeners are applied, if unset defaults to false
+
+```html
+<smart-hover children-can-change="true | false"></smart-hover>
 ```
 
 ### <code>transition-props</code>
 
-If you want to apply the transition to specific css properties, you can apply them by adding them in this attribute, separating them with a comma.
+If you want to apply the transition to specific css properties, you can apply them by adding them in this attribute, separating them with a comma. If
+this is unset it will default to 'all'
 
 ```html
 <smart-hover transition-props="left,top,height,width"></smart-hover>
@@ -134,7 +178,7 @@ If you want to apply the transition to specific css properties, you can apply th
 
 ### <code>transition-time</code>
 
-Time in milliseconds that the shadow element will take from one element to the next one when hover changes. If unset default value will be set to 180.
+Time in milliseconds that the shadow element will take from one element to the next one when hover changes. If unset default value will be set to 176.
 
 ```html
 <smart-hover transition-time="200 | 180 | 340"></smart-hover>
