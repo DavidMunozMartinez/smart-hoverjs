@@ -47,6 +47,28 @@ class SmartHover extends HTMLElement {
   }
 
   /**
+   * Applies only the style part to make the shadow visible
+   */
+  public showShadow() {
+    this.shadow.style.opacity = "0";
+    this.shadow.style.display = "block";
+    this.shadow.style.opacity = "1";
+  }
+  
+  /**
+   * Applies only the style part of making the shadow invisible
+   * @param callback Optional function executed once the element is done animating
+   */
+  public hideShadow(callback?: any) {
+    this.shadow.style.opacity = "0";
+    setTimeout(() => {
+      if (callback) {
+        callback();
+      }
+    }, this.transition.time);
+  }
+
+  /**
    * Exposing  a resize function for use to user discretion
    */
   public resize() {
@@ -204,7 +226,7 @@ class SmartHover extends HTMLElement {
    * Triggered when the container triggers the mousemove event
    * @param event DOM event
    */
-  debounceMouseMove: number = 0;
+  private debounceMouseMove: number = 0;
   private containerMouseMove() {
     clearTimeout(this.debounceMouseMove);
     setTimeout(() => {
@@ -273,29 +295,6 @@ class SmartHover extends HTMLElement {
         this.safeRemoveShadow();
       });
     }
-  }
-
-
-  /**
-   * Applies only the style part to make the shadow visible
-   */
-  public showShadow() {
-    this.shadow.style.opacity = "0";
-    this.shadow.style.display = "block";
-    this.shadow.style.opacity = "1";
-  }
-
-  /**
-   * Applies only the style part of making the shadow invisible
-   * @param callback Optional function executed once the element is done animating
-   */
-  public hideShadow(callback?: any) {
-    this.shadow.style.opacity = "0";
-    setTimeout(() => {
-      if (callback) {
-        callback();
-      }
-    }, this.transition.time);
   }
 
   /**
