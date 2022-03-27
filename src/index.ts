@@ -20,16 +20,17 @@ class SmartHover extends HTMLElement {
   private contents: string = "";
   private animateShadow: boolean = false;
   private moveEvent: MoveEvent = MoveEvent.hover;
-  private initialChildQuery: string | null = null;
-
   // This element is the one that will be moving over the child elements, the 'smart' hover
-  shadow!: HTMLElement;
-  // Current element under our smart hover
-  active: HTMLElement | null = null;
+  private shadow!: HTMLElement;
+  private shadowClass: string | null = null;
+  private childrenCanChange: boolean = false;
+
   // Query selector to filter which children can be hovered
   query: string | null = null;
-  shadowClass: string | null = null;
-  childrenCanChange: boolean = false;
+  // Query selector to define the initial position of the shadow
+  initialChildQuery: string | null = null;
+  // Current element under our smart hover
+  active: HTMLElement | null = null;
 
   connectedCallback() {
     this.defineTransition();
@@ -46,6 +47,39 @@ class SmartHover extends HTMLElement {
   }
 
   /**
+   * Exposing  a resize function for use to user discretion
+   */
+  public resize() {
+    if (this.active) {
+      this.moveShadowToTarget(this.active);
+    }
+  }
+
+  /**
+   * Exposing to use at user discretion, this function queries for interactable
+   * elements and removes/adds the necessary event listeners
+   */
+  public contentHasChanged() {
+    this.childrenListeners();
+  }
+
+  /**
+   * Using internally set timeouts makes sure to move the shadow element from one
+   * target to another applying the proper animations
+   */
+  public moveShadowToTarget(target: HTMLElement) {
+    this.shadow.classList.add("moving");
+    let rect = this.getRectangle(target);
+    this.applyPosition(rect, this.animateShadow);
+    this.showShadow();
+    this.active = target;
+    this.animateShadow = true;
+    setTimeout(() => {
+      this.shadow.classList.remove("moving");
+    }, this.transition.time);
+  }
+
+  /**
    * Defines the transition CSS property that is applied to the shadow element
    * this is based on attribute properties defined by user in the component
    */
@@ -55,7 +89,7 @@ class SmartHover extends HTMLElement {
     let transitionPropsAttr: string | null = this.getAttribute("transition-props");
     this.transition.time = parseInt(transitionTimeAttr);
 
-    let props: Array<string> = ["all"];
+    let props: Array<string> = ["transform"];
     if (transitionPropsAttr) {
       props = transitionPropsAttr.split(",");
     }
@@ -245,7 +279,7 @@ class SmartHover extends HTMLElement {
   /**
    * Applies only the style part to make the shadow visible
    */
-  showShadow() {
+  public showShadow() {
     this.shadow.style.opacity = "0";
     this.shadow.style.display = "block";
     this.shadow.style.opacity = "1";
@@ -255,7 +289,7 @@ class SmartHover extends HTMLElement {
    * Applies only the style part of making the shadow invisible
    * @param callback Optional function executed once the element is done animating
    */
-  hideShadow(callback?: any) {
+  public hideShadow(callback?: any) {
     this.shadow.style.opacity = "0";
     setTimeout(() => {
       if (callback) {
@@ -332,22 +366,6 @@ class SmartHover extends HTMLElement {
     if (shadow) {
       this.removeChild(this.shadow);
     }
-  }
-
-  /**
-   * Using internally set timeouts makes sure to move the shadow element from one
-   * target to another applying the proper animations
-   */
-  private moveShadowToTarget(target: HTMLElement) {
-    this.shadow.classList.add("moving");
-    let rect = this.getRectangle(target);
-    this.applyPosition(rect, this.animateShadow);
-    this.showShadow();
-    this.active = target;
-    this.animateShadow = true;
-    setTimeout(() => {
-      this.shadow.classList.remove("moving");
-    }, this.transition.time);
   }
 
   /**
