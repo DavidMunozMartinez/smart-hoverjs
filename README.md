@@ -47,39 +47,9 @@ Smart hover component will automatically position itself on top of the elements 
 
 Smart hoverjs has default styles applied under the .smart-hover-shadow css class
 
-Feel free to override this properties or remove them entirely by adding the "override-styles" attribute
+Feel free to add your own class to the shadow element trough the <code> shadow-class </code> attribute.
 
-```html
-<smart-hover class="container" override-styles="true">
-    <div class="button">Button 1</div>
-    <div class="button">Button 2</div>
-    <div class="button">Button 3</div>
-</smart-hover>
-```
-
-With this attribute set to "true", default styles above will not be applied and you can write your own .smart-hover-shadow class to achieve the styles you want
-
-```css
-.container {
-    width: 310px;
-    height: 30px;
-    position: absolute;
-    text-align: center;
-}
-
-.container > .button {
-    width: 100px;
-    height: 30px;
-    display: inline-block;
-    cursor: pointer;
-}
-
-.smart-hover-shadow {
-    border-bottom: rgb(46, 46, 46);
-    border-bottom-width: 3px;
-    border-bottom-style: solid;
-}
-```
+Or make use of any of the other optional attributes specified below.
 
 </br>
 </br>
@@ -93,7 +63,7 @@ With this attribute set to "true", default styles above will not be applied and 
 
 # Restrictions
 
-NOTE: There are a few style properties applied programatically that you will not be able to override like left, top, with, height.
+NOTE: There are a few style properties programatically applied to the shadow element that you will not be able to override like transform, with, height.
 The shadow element also has by default absolute position and pointer events set to none, to avoid problems with your hoverable elements
 
 # Attributes
@@ -123,7 +93,8 @@ If set to <code> "click" </code> the shadow element will always be visible and o
 
 ### <code>query-selector</code>
 
-Query selector defined here will be used to find elements inside the container, all elements found by the query selector will become 'interactable'. If unset it retrieves all children of the container using parentElement.children property.
+Query selector defined here will be used to find elements inside the container, all elements found by the query selector will become 'interactable'.
+If unset it retrieves all children of the container using parentElement.children property.
 
 ```html
 <smart-hover query-selector=".interactable">
@@ -138,8 +109,8 @@ Query selector defined here will be used to find elements inside the container, 
 ### <code> initial-child-query </code>
 
 This is ONLY used if the move-event is set to <code>"click"</code>.
-This is another query selector used to define the initial position of the shadow element, if this is unset it will use the element found trough the query selector
-attribute or the first children of the container
+This is another query selector used to define the initial position of the shadow element.
+If this is unset it will use the first element found trough the query selector or the first children of the container
 
 ```html
 <smart-hover initial-child-query=".interactable.initial">
@@ -161,7 +132,8 @@ The string defined here will be applied to the shadow element as a single class,
 
 ### <code> children-can-change </code>
 
-This is used to tell the component that interactable elements might be added or removed from the container, to make sure that only the necessary event listeners are applied, if unset defaults to false
+This is used to tell the component that interactable elements might be added or removed from the container, to make sure that only the necessary event listeners are applied.
+If unset defaults to false
 
 ```html
 <smart-hover children-can-change="true | false"></smart-hover>
